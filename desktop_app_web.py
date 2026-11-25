@@ -21,6 +21,15 @@ class LocalServer(threading.Thread):
         self.server.shutdown()
 
 
+class DesktopApi:
+    def __init__(self, window):
+        self.window = window
+
+    def choose_folder(self):
+        result = self.window.create_file_dialog(webview.FOLDER_DIALOG, allow_multiple=False)
+        return result[0] if result else ""
+
+
 def main():
     server = LocalServer()
     server.start()
@@ -33,6 +42,7 @@ def main():
         resizable=True,
         text_select=True,
     )
+    window.expose(DesktopApi(window).choose_folder)
     window.events.closed += lambda: server.stop()
     webview.start(debug=False)
 

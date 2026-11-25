@@ -18,6 +18,7 @@ from flask import Flask, jsonify, render_template, request, send_file
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
+app.config["JSON_AS_ASCII"] = False
 SETTINGS_PATH = Path.home() / ".kon-config.json"
 
 WORD_RE = re.compile(r"[A-Za-z]+(?:['’-][A-Za-z]+)*")
@@ -146,6 +147,7 @@ def convert():
     text, pages = extract_pdf(file)
     stats = analyze_text(text)
     stem = Path(file.filename).stem
+    output_dir = request.form.get("output_dir", "").strip()
     files = {
         f"{stem}.md": markdown_content(text, stats, stem).encode("utf-8"),
         f"{stem}.json": json.dumps({"filename": file.filename, "statistics": stats, "pages": pages, "text": text}, ensure_ascii=False, indent=2).encode("utf-8"),
@@ -159,8 +161,18 @@ def convert():
             for name, content in files.items():
                 archive.writestr(name, content)
         stream.seek(0)
+        if output_dir:
+            target = Path(output_dir).expanduser() / f"{stem}-converted.zip"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(stream.getvalue())
+            return jsonify({"saved_to": str(target)})
         return send_file(stream, as_attachment=True, download_name=f"{stem}-converted.zip", mimetype="application/zip")
     mimetypes = {"md": "text/markdown", "json": "application/json", "txt": "text/plain", "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
+    if output_dir:
+        target = Path(output_dir).expanduser() / f"{stem}.{fmt}"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(files[f"{stem}.{fmt}"])
+        return jsonify({"saved_to": str(target)})
     return send_file(io.BytesIO(files[f"{stem}.{fmt}"]), as_attachment=True, download_name=f"{stem}.{fmt}", mimetype=mimetypes[fmt])
 
 
