@@ -40,7 +40,7 @@ python app.py
 python desktop_app.py
 ```
 
-macOSでは、プロジェクトフォルダー内の `启动 KOTOBI PDF.command` をダブルクリックして起動することもできます。
+macOSでは、プロジェクトフォルダー内の `启动 KOTOBI PDF.command` をダブルクリックして起動することもできます。macOS版はTkウィンドウを使わず、OS標準のファイル選択と形式選択ダイアログを使います。
 
 PDFファイルを直接渡して起動することもできます。
 
