@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Trilingual PDF Converter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <header><div class="mark">三</div><div><p class="eyebrow">PDF LANGUAGE WORKBENCH</p><h1>Trilingual PDF<br><em>Converter</em></h1></div></header>
+    <p class="lead">PDFの文章を、読みやすい三語データへ。<br>抽出・分析・整形をひとつの流れで。</p>
+    <section class="upload" id="dropzone"><div class="upload-icon">↑</div><h2>PDFをここにドロップ</h2><p>またはファイルを選択（最大 32 MB）</p><input id="file" type="file" accept="application/pdf"><button class="browse" id="browse">ファイルを選択</button><div class="filename" id="filename"></div></section>
+    <section class="dashboard hidden" id="dashboard"><div class="section-label">LANGUAGE SNAPSHOT <span id="pages"></span></div><div class="cards"><div class="stat"><span>かな</span><strong id="kana">—</strong><small>Japanese kana</small></div><div class="stat"><span>漢字</span><strong id="kanji">—</strong><small>CJK characters</small></div><div class="stat"><span>ABC</span><strong id="english">—</strong><small>English words</small></div><div class="stat primary"><span>主言語</span><strong id="primary">—</strong><small>Primary language</small></div></div></section>
+    <section class="formats"><div class="section-label">EXPORT FORMAT</div><div class="format-grid"><label><input type="radio" name="format" value="md" checked><span><b>.md</b><small>Markdown</small></span></label><label><input type="radio" name="format" value="docx"><span><b>.docx</b><small>Word document</small></span></label><label><input type="radio" name="format" value="json"><span><b>.json</b><small>Structured data</small></span></label><label><input type="radio" name="format" value="txt"><span><b>.txt</b><small>Plain text</small></span></label><label class="zip"><input type="radio" name="format" value="zip"><span><b>.zip</b><small>All formats</small></span></label></div></section>
+    <button class="convert" id="convert" disabled>変換してダウンロード <span>→</span></button><p class="status" id="status"></p>
+    <footer><span>NFКC NORMALIZED · JP / ZH / EN</span><span>LOCAL &amp; PRIVATE</span></footer>
+  </main>
+  <script>
+    const fileInput=document.getElementById('file'), dropzone=document.getElementById('dropzone'), filename=document.getElementById('filename'), convert=document.getElementById('convert'), status=document.getElementById('status'); let selected;
+    document.getElementById('browse').onclick=()=>fileInput.click(); fileInput.onchange=()=>select(fileInput.files[0]);
+    ['dragenter','dragover'].forEach(e=>dropzone.addEventListener(e,x=>{x.preventDefault();dropzone.classList.add('drag')})); ['dragleave','drop'].forEach(e=>dropzone.addEventListener(e,x=>{x.preventDefault();dropzone.classList.remove('drag')})); dropzone.addEventListener('drop',e=>select(e.dataTransfer.files[0]));
+    async function select(file){if(!file||file.type!=='application/pdf'){status.textContent='PDFファイルを選択してください。';return} selected=file; filename.textContent='✓ '+file.name; status.textContent='解析中…'; const fd=new FormData();fd.append('file',file); const r=await fetch('/api/preview',{method:'POST',body:fd}); const d=await r.json(); if(!r.ok){status.textContent=d.error;return} document.getElementById('dashboard').classList.remove('hidden'); document.getElementById('pages').textContent=`· ${d.pages} pages`; document.getElementById('kana').textContent=d.stats.kana.toLocaleString();document.getElementById('kanji').textContent=d.stats.kanji.toLocaleString();document.getElementById('english').textContent=d.stats.english_words.toLocaleString();document.getElementById('primary').textContent=d.stats.primary_language;convert.disabled=false;status.textContent='解析が完了しました。出力形式を選択してください。'}
+    convert.onclick=async()=>{convert.disabled=true;status.textContent='変換中…';const fd=new FormData();fd.append('file',selected);fd.append('format',document.querySelector('input[name=format]:checked').value);const r=await fetch('/api/convert',{method:'POST',body:fd});if(!r.ok){status.textContent=(await r.json()).error;convert.disabled=false;return}const blob=await r.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=r.headers.get('Content-Disposition')?.split('filename=')[1]?.replaceAll('"','')||'converted';a.click();URL.revokeObjectURL(url);status.textContent='ダウンロードを開始しました。';convert.disabled=false};
+  </script>
+</body></html>
