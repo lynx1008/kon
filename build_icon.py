@@ -50,5 +50,17 @@ def png(path: str, size: int = 1024):
         handle.write(content)
 
 
+def icns(png_path: str, icns_path: str):
+    data = open(png_path, "rb").read()
+    entries = []
+    for kind in (b"ic07", b"ic08", b"ic09", b"ic10"):
+        entries.append(kind + struct.pack(">I", len(data) + 8) + data)
+    payload = b"".join(entries)
+    with open(icns_path, "wb") as handle:
+        handle.write(b"icns" + struct.pack(">I", len(payload) + 8) + payload)
+
+
 if __name__ == "__main__":
     png(sys.argv[1])
+    if len(sys.argv) > 2:
+        icns(sys.argv[1], sys.argv[2])
