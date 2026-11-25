@@ -24,7 +24,7 @@ FORMATS = {
     "纯文本 (.txt)": "txt",
     "全部格式 (.zip)": "zip",
 }
-APP_NAME = "kon コン"
+APP_NAME = "コン"
 
 
 class DesktopApp:
@@ -71,7 +71,7 @@ class DesktopApp:
         titlebox = tk.Frame(brand, bg="#fbfcfa")
         titlebox.pack(side="left", anchor="w")
         tk.Label(titlebox, text=APP_NAME, font=("Arial", 20, "bold"), bg="#fbfcfa", fg="#1e2725").pack(anchor="w")
-        tk.Label(titlebox, text="PDF CONVERTER", font=("Arial", 8), bg="#fbfcfa", fg="#71807a").pack(anchor="w")
+        tk.Label(titlebox, text="PDF", font=("Arial", 8), bg="#fbfcfa", fg="#71807a").pack(anchor="w")
         tk.Label(self.root, text="三語識別 · 構成を保って変換", font=("Arial", 11), bg="#fbfcfa", fg="#71807a").pack(anchor="w", padx=28, pady=(7, 0))
         card = tk.Frame(self.root, bg="#e5f3ec", padx=18, pady=16)
         card.pack(fill="x", padx=24, pady=22)

@@ -1,4 +1,4 @@
-# kon コン
+# コン
 
 三語PDF文書をローカルで整える、軽量なPDFワークベンチです。
 
@@ -40,7 +40,7 @@ python app.py
 python desktop_app.py
 ```
 
-macOSでは、プロジェクトフォルダー内の `启动 KOTOBI PDF.command` をダブルクリックして起動することもできます。macOS版はTkウィンドウを使わず、OS標準のファイル選択と形式選択ダイアログを使います。
+macOSでは、プロジェクトフォルダー内の `启动 コン.command` をダブルクリックして起動することもできます。macOS版はTkウィンドウを使わず、OS標準のファイル選択と形式選択ダイアログを使います。
 
 PDFファイルを直接渡して起動することもできます。
 
@@ -48,7 +48,7 @@ PDFファイルを直接渡して起動することもできます。
 python desktop_app.py "/path/to/document.pdf"
 ```
 
-Windowsでは `install_windows_context_menu.bat` を一度実行すると、PDFファイルの右クリックメニューに `KOTOBI PDF` が追加されます。macOSではFinderの「クイックアクション」またはAutomatorサービスから `python desktop_app.py "$1"` を呼び出せます。
+Windowsでは `install_windows_context_menu.bat` を一度実行すると、PDFファイルの右クリックメニューに `コン` が追加されます。macOSではFinderの「クイックアクション」またはAutomatorサービスから `python desktop_app.py "$1"` を呼び出せます。
 
 初期ショートカットは `Ctrl + Alt + P`（macOSでは同じキー表記）です。設定画面でショートカットと、通常のショートカット／長押しモードを変更できます。ショートカットを実行するとPDF選択画面が開き、Markdown、Word、JSON、TXT、全形式ZIPから出力形式を選択できます。変換結果は元PDFと同じフォルダーに保存されます。macOSでは初回のみ、システム設定から入力監視またはアクセシビリティの許可が必要になる場合があります。
 
