@@ -6,3 +6,4 @@ venv/
 uploads/
 outputs/
 *.zip
+.DS_Store
