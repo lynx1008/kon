@@ -18,6 +18,8 @@ from flask import Flask, jsonify, render_template, request, send_file
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
+SETTINGS_PATH = Path.home() / ".kon-config.json"
+app.config["HOTKEY_RELOAD"] = None
 
 WORD_RE = re.compile(r"[A-Za-z]+(?:['’-][A-Za-z]+)*")
 HIRAGANA_KATAKANA_RE = re.compile(r"[\u3040-\u30ff\u31f0-\u31ff]")
@@ -123,6 +125,28 @@ def make_docx(text: str, stats: dict, filename: str) -> io.BytesIO:
 @app.get("/")
 def index():
     return render_template("index.html")
+
+
+@app.get("/api/settings")
+def settings():
+    try:
+        values = json.loads(SETTINGS_PATH.read_text())
+    except (OSError, json.JSONDecodeError):
+        values = {}
+    return jsonify({"hotkey": values.get("hotkey", "")})
+
+
+@app.post("/api/settings")
+def update_settings():
+    values = request.get_json(silent=True) or {}
+    hotkey = str(values.get("hotkey", "")).strip()
+    if not hotkey or len(hotkey) > 80:
+        return jsonify({"error": "请输入有效的快捷键。"}), 400
+    SETTINGS_PATH.write_text(json.dumps({"hotkey": hotkey}, ensure_ascii=False, indent=2))
+    reload_hotkey = app.config.get("HOTKEY_RELOAD")
+    if reload_hotkey:
+        reload_hotkey()
+    return jsonify({"ok": True, "hotkey": hotkey})
 
 
 @app.post("/api/preview")

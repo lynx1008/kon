@@ -29,6 +29,7 @@ class HotkeyManager:
             return default
 
     def start(self):
+        self.stop()
         try:
             self.listener = keyboard.GlobalHotKeys({self.load_hotkey(): self.show_window})
             self.listener.start()
@@ -77,6 +78,7 @@ def main():
     )
     hotkeys = HotkeyManager(window)
     hotkeys.start()
+    app.config["HOTKEY_RELOAD"] = hotkeys.start
     window.events.closed += lambda: server.stop()
     window.events.closed += lambda: hotkeys.stop()
     webview.start(debug=False)
