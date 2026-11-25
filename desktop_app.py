@@ -6,6 +6,7 @@ small format picker. Files are processed locally and written beside the PDF.
 from __future__ import annotations
 
 import json
+import sys
 import time
 import tkinter as tk
 from pathlib import Path
@@ -27,7 +28,7 @@ APP_NAME = "KOTOBI PDF"
 
 
 class DesktopApp:
-    def __init__(self) -> None:
+    def __init__(self, input_path: str | None = None) -> None:
         self.root = tk.Tk()
         self.root.title(APP_NAME)
         self.root.geometry("470x560")
@@ -40,6 +41,8 @@ class DesktopApp:
         self.press_key = self.config.get("long_press_key", "p")
         self.build_ui()
         self.start_hotkey_listener()
+        if input_path:
+            self.root.after(150, lambda: self.open_input_file(input_path))
 
     def load_config(self):
         try:
@@ -171,6 +174,13 @@ class DesktopApp:
         if path:
             self.show_format_picker(Path(path))
 
+    def open_input_file(self, input_path: str):
+        path = Path(input_path).expanduser()
+        if path.is_file() and path.suffix.lower() == ".pdf":
+            self.show_format_picker(path)
+        else:
+            messagebox.showerror("KOTOBI PDF", "请选择 PDF 文件。")
+
     def show_format_picker(self, pdf_path: Path):
         popup = tk.Toplevel(self.root)
         popup.title("选择输出格式")
@@ -219,4 +229,4 @@ class DesktopApp:
 
 
 if __name__ == "__main__":
-    DesktopApp().run()
+    DesktopApp(sys.argv[1] if len(sys.argv) > 1 else None).run()
