@@ -12,7 +12,7 @@ else
 fi
 FORMAT=$(osascript <<'APPLESCRIPT'
 set formats to {"全部格式（ZIP）", "Markdown（.md）", "Word（.docx）", "JSON（.json）", "纯文本（.txt）"}
-set picked to choose from list formats with prompt "KOTOBI PDF · 选择输出格式" default items {"全部格式（ZIP）"}
+set picked to choose from list formats with prompt "kon コン · 选择输出格式" default items {"全部格式（ZIP）"}
 if picked is false then return ""
 return item 1 of picked
 APPLESCRIPT
@@ -26,4 +26,4 @@ case "$FORMAT" in
   *) exit 0;;
 esac
 OUTPUT=$(.venv/bin/python convert_local.py "$PDF_PATH" "$EXT") || exit 1
-osascript -e "display notification \"转换完成：$OUTPUT\" with title \"KOTOBI PDF\""
+osascript -e "display notification \"转换完成：$OUTPUT\" with title \"kon コン\""

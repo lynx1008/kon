@@ -8,6 +8,6 @@ if not exist "%PYTHON%" (
   pause
   exit /b 1
 )
-reg add "HKCU\Software\Classes\SystemFileAssociations\.pdf\shell\KOTOBI PDF\command" /ve /d "^"%PYTHON%^" ^"%APP%^" ^"%%1^"" /f >nul
-echo KOTOBI PDF has been added to the PDF right-click menu.
+reg add "HKCU\Software\Classes\SystemFileAssociations\.pdf\shell\kon コン\command" /ve /d "^"%PYTHON%^" ^"%APP%^" ^"%%1^"" /f >nul
+echo kon コン has been added to the PDF right-click menu.
 pause
