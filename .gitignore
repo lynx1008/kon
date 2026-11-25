@@ -7,3 +7,6 @@ uploads/
 outputs/
 *.zip
 .DS_Store
+.pyinstaller-cache/
+build/
+dist/
