@@ -11,6 +11,8 @@ from pathlib import Path
 import fitz
 from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.shared import Pt
 from flask import Flask, jsonify, render_template, request, send_file
 
@@ -92,12 +94,21 @@ def make_docx(text: str, stats: dict, filename: str) -> io.BytesIO:
     normal = doc.styles["Normal"]
     normal.font.name = "Calibri"
     normal.font.size = Pt(10.5)
-    normal._element.rPr.rFonts.set("w:eastAsia", "Yu Gothic")
+
+    def set_east_asia_font(style, font_name: str):
+        rpr = style._element.get_or_add_rPr()
+        rfonts = rpr.rFonts
+        if rfonts is None:
+            rfonts = OxmlElement("w:rFonts")
+            rpr.append(rfonts)
+        rfonts.set(qn("w:eastAsia"), font_name)
+
+    set_east_asia_font(normal, "Yu Gothic")
     for style_name in ["Title", "Heading 1", "Heading 2"]:
         if style_name in doc.styles:
             style = doc.styles[style_name]
             style.font.name = "Calibri"
-            style._element.rPr.rFonts.set("w:eastAsia", "Yu Gothic")
+            set_east_asia_font(style, "Yu Gothic")
     doc.add_heading(filename, level=0)
     doc.add_paragraph(f"主言語: {stats['primary_language']}　かな: {stats['kana']}　漢字: {stats['kanji']}　English words: {stats['english_words']}")
     for block in text.split("\n\n"):
